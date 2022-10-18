@@ -93,13 +93,13 @@ class HandleRequests(BaseHTTPRequestHandler):
             if id is not None:
                 response = f"{get_single_employee(id)}"
             else:
-                response = f"{get_all_employees}"
+                response = f"{get_all_employees()}"
             
         if resource == "customers":
             if id is not None:
                 response = f"{get_single_customer(id)}"
             else:
-                response = f"{get_all_customers}"
+                response = f"{get_all_customers()}"
         
             self.wfile.write(response.encode())
     # Here's a method on the class that overrides the parent's method.
