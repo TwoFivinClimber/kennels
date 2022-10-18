@@ -42,7 +42,7 @@ class HandleRequests(BaseHTTPRequestHandler):
             pass  # Request had trailing slash: /animals/
 
         return (resource, id)  # This is a tuple
-    
+
     def _set_headers(self, status):
         # Notice this Docstring also includes information about the arguments passed to the function
         """Sets the status code, Content-Type and Access-Control-Allow-Origin
@@ -72,7 +72,7 @@ class HandleRequests(BaseHTTPRequestHandler):
     def do_GET(self):
         """gets the right thing"""
         self._set_headers(200)
-        response = {}  # Default response
+        response = {}
 
         # Parse the URL and capture the tuple that is returned
         (resource, id) = self.parse_url(self.path)
@@ -83,25 +83,25 @@ class HandleRequests(BaseHTTPRequestHandler):
             else:
                 response = f"{get_all_animals()}"
 
-        self.wfile.write(response.encode())   
         if resource == "locations":
             if id is not None:
                 response = f"{get_single_location(id)}"
             else:
                 response = f"{get_all_locations()}"
-        self.wfile.write(response.encode())
+                
         if resource == "employees":
             if id is not None:
                 response = f"{get_single_employee(id)}"
             else:
                 response = f"{get_all_employees}"
-        self.wfile.write(response.encode())
+            
         if resource == "customers":
             if id is not None:
                 response = f"{get_single_customer(id)}"
             else:
                 response = f"{get_all_customers}"
-        self.wfile.write(response.encode())
+        
+            self.wfile.write(response.encode())
     # Here's a method on the class that overrides the parent's method.
     # It handles any POST request.
     def do_POST(self):
@@ -113,8 +113,8 @@ class HandleRequests(BaseHTTPRequestHandler):
         # Convert JSON string to a Python dictionary
         post_body = json.loads(post_body)
 
-        # Parse the URL
-        (resource, id) = self.parse_url(self.path)
+        # Parse the URL ##ID needs to go back in here
+        (resource) = self.parse_url(self.path)
 
         # Initialize new animal
         new_animal = None
@@ -127,12 +127,9 @@ class HandleRequests(BaseHTTPRequestHandler):
 
         # Encode the new animal and send in response
         self.wfile.write(f"{new_animal}".encode())
-        
         new_location = None
-        
         if resource == "locations":
             new_location = create_location(post_body)
-            
         self.wfile.write(f"{new_location}".encode())
 
     # Here's a method on the class that overrides the parent's method.
