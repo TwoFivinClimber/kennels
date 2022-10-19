@@ -3,11 +3,13 @@ LOCATIONS = [
       "id": 1,
       "name": "Nashville North",
       "address": "8422 Johnson Pike",
+      "status": "active"
     },
     {
-       "id": 2,
+      "id": 2,
       "name": "Nashville South",
       "address": "209 Emory Drive",
+      "status": "active"
     }
 ]
 
@@ -23,6 +25,7 @@ def get_single_location(id):
         if location["id"] == id:
             requested_location = location
     return requested_location
+
 def create_location(location):
     """creates location"""
     max_id = LOCATIONS[-1]["id"]
@@ -30,3 +33,19 @@ def create_location(location):
     location["id"] = new_id
     LOCATIONS.append(location)
     return location
+
+def delete_location(id):
+    """deletes location"""
+    location_index = -1
+    for index, location in enumerate(LOCATIONS):
+        if location["id"] == id:
+            location_index = index
+    if location_index >= 0:
+        LOCATIONS.pop(location_index)
+        
+def update_location(id, new_location):
+    """updates location"""
+    for index, location in enumerate(LOCATIONS):
+        if location["id"] == id:
+            LOCATIONS[index] = new_location
+            break

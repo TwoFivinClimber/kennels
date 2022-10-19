@@ -1,3 +1,4 @@
+#pylint: disable=invalid-name
 import json
 from http.server import BaseHTTPRequestHandler, HTTPServer
 from views import (
@@ -11,8 +12,17 @@ from views import (
                     get_single_customer,
                     create_animal,
                     create_location,
+                    create_employee,
+                    create_customer,
+                    delete_animal,
+                    delete_customer,
+                    delete_location,
+                    delete_employee,
+                    update_animal,
+                    update_location,
+                    update_customer,
+                    update_employee,
                   )
-
 
 # Here's a class. It inherits from another class.
 # For now, think of a class as a container for functions that
@@ -101,11 +111,11 @@ class HandleRequests(BaseHTTPRequestHandler):
             else:
                 response = f"{get_all_customers()}"
         
-            self.wfile.write(response.encode())
+        self.wfile.write(response.encode())
     # Here's a method on the class that overrides the parent's method.
     # It handles any POST request.
     def do_POST(self):
-        """add items to server"""
+        """handles posts to server"""
         self._set_headers(201)
         content_len = int(self.headers.get('content-length', 0))
         post_body = self.rfile.read(content_len)
@@ -113,11 +123,14 @@ class HandleRequests(BaseHTTPRequestHandler):
         # Convert JSON string to a Python dictionary
         post_body = json.loads(post_body)
 
-        # Parse the URL ##ID needs to go back in here
-        (resource) = self.parse_url(self.path)
+        # Parse the URL
+        (resource, id) = self.parse_url(self.path)
 
         # Initialize new animal
         new_animal = None
+        new_location = None
+        new_employee = None
+        new_customer = None
 
         # Add a new animal to the list. Don't worry about
         # the orange squiggle, you'll define the create_animal
@@ -127,18 +140,76 @@ class HandleRequests(BaseHTTPRequestHandler):
 
         # Encode the new animal and send in response
         self.wfile.write(f"{new_animal}".encode())
-        new_location = None
+        
         if resource == "locations":
             new_location = create_location(post_body)
+            
         self.wfile.write(f"{new_location}".encode())
+        
+        if resource == "employees":
+            new_employee = create_employee(post_body)
+            
+        self.wfile.write(f"{new_employee}".encode())
+        
+        if resource == "customers":
+            new_customer = create_customer(post_body)
+        
+        self.wfile.write(f"{new_customer}".encode())
 
     # Here's a method on the class that overrides the parent's method.
     # It handles any PUT request.
 
     def do_PUT(self):
-        """Handles PUT requests to the server
-        """
-        self.do_POST()
+        """Handles PUT requests"""
+        self._set_headers(204)
+        content_len = int(self.headers.get('content-length', 0))
+        post_body = self.rfile.read(content_len)
+        post_body = json.loads(post_body)
+
+        # Parse the URL
+        (resource, id) = self.parse_url(self.path)
+
+        # Delete a single animal from the list
+        if resource == "animals":
+            update_animal(id, post_body)
+            
+        if resource == "locations":
+            update_location(id, post_body)
+            
+        if resource == "customers":
+            update_customer(id, post_body)
+            
+        if resource == "employees":
+            update_employee(id, post_body)
+
+    # Encode the new animal and send in response
+        self.wfile.write("".encode())
+        
+        
+    def do_DELETE(self):
+        """handels delete requests"""
+        # Set a 204 response code
+        self._set_headers(204)
+
+        # Parse the URL
+        (resource, id) = self.parse_url(self.path)
+
+        # Delete a single animal from the list
+        if resource == "animals":
+            delete_animal(id)
+            
+        if resource == "customers":
+            delete_customer(id)
+            
+        if resource == "locations":
+            delete_location(id)
+            
+        if resource == "employees":
+            delete_employee(id)
+
+
+        # Encode the new animal and send in response
+        self.wfile.write("".encode())
 
 
 # This function is not inside the class. It is the starting
